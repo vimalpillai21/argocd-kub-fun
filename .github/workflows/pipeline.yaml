@@ -1,0 +1,62 @@
+name: MLops pipeline
+
+on:
+  push:
+    branch: [cicd]
+    workflow_dispatch:
+
+env:
+  AWS_REGION: ap-south-1
+  S3_BUCKET:
+
+jobs:
+  train-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.DEFAULT_TOKEN }}
+      
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Generate Dataset
+        run: python generate_data.py
+      
+      - name: Train model
+        run: python train.py
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Push model to S3 directly
+        run: |
+          aws s3 cp models/churn_model.pkl s3://vimalp-cicd-pipeline/models/churn_model.pkl
+          echo "Model pushed to S3. Great Success!"
+      
+      - name: Update inference.yaml with model S3 path
+        run: |
+          MODEL_URI="s3://vimalp-cicd-pipeline/models/churn_model.pkl"
+          sed -i "s|storageUri: .*|storageUri: $MODEL_URI|g" k8s/inference.yaml
+      
+      - name: Commit updated inference.yaml
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add k8s/inference.yaml
+          git commit -m "Updated model S3 path" || echo "no changes"
+          git push || echo "No changes to push"
