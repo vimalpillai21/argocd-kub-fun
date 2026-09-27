@@ -17,9 +17,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.DEFAULT_TOKEN }}
+        uses: actions/checkout@v4
       
       - name: Install Python
         uses: actions/setup-python@v4
