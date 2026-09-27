@@ -2,22 +2,27 @@
 
 ## Quickstart
 
-1. **Install KServe** and cluster serving runtimes for Scikit-Learn on your Kubernetes cluster.
-2. **Apply manifests** to configure service accounts and deploy the inference service:
-```bash
-kubectl apply -f serviceaccount.yaml
-kubectl apply -f inference.yaml
-
-```
+1. **Run locally (outside Kubernetes/KServe):**
+    ```bash
+    docker build -t vimalpillai/modelpredictor .
+    docker run -d -p 8000:8000 vimalpillai/modelpredictor
+    ```
 
 
-3. **Test the endpoint** with a sample prediction request:
-```bash
-curl -s -X POST http://localhost:5000/v1/models/model-predictor:predict \
-  -H "Content-Type: application/json" \
-  -d '{"instances":[[21, 22, 234, 456, 12]]}'
+2. **Install KServe** and cluster serving runtimes for Scikit-Learn on your Kubernetes cluster.
+3. **Apply manifests** to configure service accounts and deploy the inference service:
+    ```bash
+    kubectl apply -f serviceaccount.yaml
+    kubectl apply -f inference.yaml
+    ```
 
-```
+
+4. **Test the endpoint** with a sample prediction request:
+    ```bash
+    curl -s -X POST http://localhost:5000/v1/models/model-predictor:predict \
+    -H "Content-Type: application/json" \
+    -d '{"instances":[[21, 22, 234, 456, 12]]}'
+    ```
 
 
 
