@@ -35,3 +35,20 @@
 
 
 * **`inference.yaml`**: Defines the KServe `InferenceService` custom resource for the Scikit-Learn model.
+
+---
+
+
+# Argo CD Deployment and Configuration Guide
+
+1. Install Argo CD in the cluster.
+2. Create a new application and configure the **General**, **Source**, and **Destination** sections:
+   * Enter the application name and project name, and set the sync policy to **Automatic**.
+   * Enter the repository details in the **Source** section.
+   * Enter the target cluster and namespace details in the **Destination** section.
+3. Click **Create**.
+4. Edit the secret resource `sa-s3-secret` in the `nano` editor and enter `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` in base64-encoded format using the following command:
+   ```bash
+   echo -n "AKIA..." | base64
+    ```
+5. Delete the **InferenceService** resource from the Argo CD UI and synchronize that resource again.
