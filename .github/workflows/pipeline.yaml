@@ -44,7 +44,7 @@ jobs:
       - name: Push model to S3 directly
         run: |
           aws s3 cp models/churn_model.pkl s3://vimalp-cicd-pipeline/models/churn_model.pkl
-          echo "Model pushed to S3. Great Success!"
+          echo "Model pushed to S3.. Great Success!"
       
       - name: Update inference.yaml with model S3 path
         run: |
